@@ -1,124 +1,95 @@
 package controller;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Scanner;
 
-import model.data_structures.ArregloDinamico;
+import model.data_structures.GrafoListaAdyacencia;
 import model.data_structures.ILista;
+import model.data_structures.Vertex;
+import model.logic.LandingPointSub;
+import model.logic.LandingPointer;
 import model.logic.Modelo;
-import model.logic.Repeticion;
-import model.logic.YouTubeVideo;
 import view.View;
 
-public class Controller {
-
-	/* Instancia del Modelo*/
+public class Controller 
+{
+	/**
+	 *  Instancia del Modelo
+	 */
 	private Modelo modelo;
 	
-	/* Instancia de la Vista*/
+	/**
+	 *  Instancia de la Vista
+	 */
 	private View view;
 	
 	/**
 	 * Crear la vista y el modelo del proyecto
-	 * @param capacidad tamaNo inicial del arreglo
-	 * @throws IOException 
-	 * @throws ParseException 
 	 */
-	public Controller () throws ParseException, IOException
+	public Controller ()
 	{
-		view = new View();
 		modelo = new Modelo();
+		view = new View();
+		
 	}
-
 
 	public void run() 
 	{
 		Scanner lector = new Scanner(System.in);
 		boolean fin = false;
-		String dato = "";
-		Object respuesta = null;
-
-		
-		while(!fin){
-			view.printMenu();
-			
-			int option = lector.nextInt();
-			switch(option){
-				case 1:
-					view.printMessage("Inicializando...");
-					try {
-					view.printMessage(modelo.cargar());
-				} catch (ParseException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-					
-				break;
-				
-				case 2:
-
-					view.printMessage("Seleccione un requerimiento");
-					int res = lector.nextInt();
-					if(res==1){
-						view.printMessage("Ingrese: Categoria,min,max");
-						String req = lector.next();
-						String[] ans = req.split(",");
-						view.printMessage(modelo.requerimiento1(ans[0], Double.parseDouble(ans[1]), Double.parseDouble(ans[2])));
-					}
-					else if(res==2){
-						view.printMessage("Ingrese: minEnergia,maxEnergia,minDance,maxDance");
-						String req = lector.next();
-						String[] ans = req.split(",");
-						ArregloDinamico<Repeticion> este = modelo.req2(Double.parseDouble(ans[0]), 
-																		 Double.parseDouble(ans[1]), 
-																		 Double.parseDouble(ans[2]), 
-																		 Double.parseDouble(ans[3]));
-						view.imprimirVideoRequerimineto(este, este.size());
-					}
-					else if(res==3){
+		view.printMenu();
+		while( !fin )
+			{
+				int option = lector.nextInt();
+				switch(option)
+				{
+					case 1:
 						
-					}
-					else if(res==4){
-						view.printMessage("1.Req\n2.Agregar nuevo genero");
-						int res2 = lector.nextInt();
-						if(res2==1){
-							view.printMessage("Ingrese nombre,tempo minimo, tempo maximo");
-							String aux = lector.next();
-							String aux2[] = aux.split(",");
-							modelo.agregarNuevoGenero(aux2[0], Double.parseDouble(aux2[1]) , Double.parseDouble(aux2[2]));
-							view.printMessage("Genero agregado a la lista");							
+						break;
+					case 2:
+						view.printMessage("Los landing points submarinos que sirven de interconexion son: ");
+						ILista<Vertex<String, Integer>> landing = modelo.req2();
+						int c = 0;
+						for(int i= 1; i<= landing.size();i++)
+						{
+							LandingPointSub<String,Integer> actual = (LandingPointSub<String,Integer>) landing.getElement(i);
+							view.printMessage("NOMBRE: "+actual.getId()+" PAIS: "+actual.darPais()+" INDENTIFICADOR: "+actual.getInfo());
+							c+= actual.edges().size();
 						}
-						if(res2==2){
-						view.printMessage("Ingrese el/los generos que desea buscar(genero1,generos2,...)");
-						view.printMessage(modelo.req4(lector.next()));
+						view.printMessage("Con un total de cables conectados de "+c);
+						break;
+							
+					case 3:
+						view.printMessage("Ingresar el nombre de la capital del pais de salida:");
+						String ciudadSal = lector.next();
+						view.printMessage("Ingresar el nombre de la capital del pais de destino:");
+						String ciudadDes = lector.next();
+						modelo.req3(ciudadSal, ciudadDes);
+						break;
+					case 4:
+						modelo.req4();
+						break;
+						
+					case 5:
+						view.printMessage("Ingrese el nombre del landing point a analizar: ");
+						String landingPoint= lector.next();
+						ILista<Vertex<String,Integer>> afectados = modelo.req5(landingPoint);
+						view.printMessage("El numero total de paises afectados son "+afectados.size());
+						for(int i = 1; i<=afectados.size();i++)
+						{
+							LandingPointer<String,Integer> actual = (LandingPointer<String,Integer>) afectados.getElement(i);
+							view.printMessage(actual.getId());
 						}
-					}
-					else if(res==5){
-						view.printMessage("Ingrese los intervalos de tiempo(00:00,00:00");
-						String[] aux = lector.next().split(",");
-						view.printMessage(modelo.Req5(aux[0], aux[1]));
-					}
-
-					break;					
-				case 3:
+						break;
 					
-				case 4:
-					view.printMessage("Pruebas de desempeño");
-					break;
-				case 5: 
-					view.printMessage("--------- \n Hasta pronto !! \n---------"); 
-					lector.close();
-					fin = true;
-					break;				
+					case 6:
+						view.printMessage("--------- \n Hasta pronto !! \n---------"); 
+						lector.close();
+						fin = true;
+						break;
 				
-				default: 
-					view.printMessage("--------- \n Opcion Invalida !! \n---------");
-					break;
+				}
 			}
-		}
-		}
+		
 	}
+
+}

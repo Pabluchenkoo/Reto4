@@ -10,6 +10,7 @@ public class NodoLista <T extends Comparable <T>>
 	{
 		information=info;
 		siguiente=null;
+		this.information = info;
 	}
 	public void cambiarSiguiente(NodoLista<T> pSiguiente)
 	{

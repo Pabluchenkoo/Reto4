@@ -1,37 +1,50 @@
 package model.data_structures;
 
-public interface ILista <T>
+public interface ILista <T extends Comparable<T>> extends Comparable<ILista<T>>
 {
-	void addFirst(T element);
+	public void addFirst(T elem);
 	
-	void addLast(T element);
+	public void addLast(T elem);
 	
-	void insertElement(T element, int pos);
+	public void insertElement(T elem, int pos);
 	
-	T removeFirst();
+	public T removeFirst();
 	
-	T removeLast();
+	public T removeLast();
 	
-	T deleteElement(int pos);
+	public T deleteElement(int pos);
 	
-	T firstElement();
+	public T firstElement();
 	
-	T lastElement();
+	public T lastElement();
 	
-	T getElement(int pos);
+	public T getElement(int pos);
 	
-	int size();
+	public int size();
 	
-	boolean isEmpty();
+	public boolean isEmpty();
 	
-	int isPresent(T element);
+	public boolean isPresent(T element);
 	
-	void exchange(int pos1, int pos2);
+	public void exchange(int pos1, int pos2);
 	
-	void changeInfo(int pos, T element);
+	public void changeElement(int pos, T elem);
 	
-	ILista<T> subList2(int numElement);
-
-	ILista<T> subList(int principio, int fin);
+	/**
+	* Crear una sublista de la lista original (this).
+	* Los elementos se toman en el mismo orden como aparecen en la lista original (this).
+	* @param número de elementos que contendrá la sublista. Si el número es superior al tamaño
+	 
+	* original de la lista, se obtiene una copia de la lista original.
+	* @return sublista creada con la misma representación de la lista original (this).
+	*/
+	public ILista<T> sublista(int numElementos);
 	
+	/**
+	* Retorna una sublista con los elementos desde pos hasta la cantidad solicitada.
+	* @param pos Posición desde la que se quiere obtener la sublista.
+	* @param size Tamaño de la sublista.
+	* @return Una nueva lista con los elementos solicitados.
+	*/
+	public ILista<T> subListaPos(int pos, int size);
 }

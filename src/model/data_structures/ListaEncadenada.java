@@ -1,261 +1,308 @@
 package model.data_structures;
 
-import utils.Ordenamiento;
-
-public class ListaEncadenada <T extends Comparable<T>> implements ILista<T>
+public class ListaEncadenada<T extends Comparable<T>> implements ILista<T>
 {
-	private int tamanio;
-	private NodoLista<T> primero;
+
+	private NodoLista<T> first;
+
+	private NodoLista<T> last;
+	private int size;
 	
-	private Ordenamiento<T> ordenamiento;
-	
-	public void addFirst(T element) 
+	public ListaEncadenada()
 	{
-		NodoLista<T> nuevoNodo = new NodoLista<T>( element);
-		nuevoNodo.cambiarSiguiente(primero);
-		primero=nuevoNodo;
-		tamanio++;
-		
+		first = null;
+		last = null;
+		size = 0;
+	}
+	
+	public ListaEncadenada(T elem)
+	{
+		first = new NodoLista<T>(elem);
+	}
+	@Override
+
+	public void addFirst(T elem) 
+	{
+		NodoLista<T> nuevo = new NodoLista<T>(elem);
+		if (first == null)
+		{
+			first = nuevo;
+			last = nuevo;
+		}
+		else
+		{
+			nuevo.cambiarSiguiente(first);
+			first = nuevo;
+		}
+		size++;
+
 	}
 
 	@Override
-	public void addLast(T element) 
+	public void addLast(T elem) 
 	{
-		NodoLista<T> auxiliar=primero;
-		NodoLista<T> last=new NodoLista<T>(element);
-		if(primero!=null)
+		NodoLista<T> nuevo = new NodoLista<T>(elem);
+		if (first == null)
 		{
-			while(auxiliar.darSiguiente()!=null)
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			auxiliar.cambiarSiguiente(last);
+			first = nuevo;
+	
 		}
 		else
-			primero=last;
-		tamanio++;
-
-
+		{
+			last.cambiarSiguiente(nuevo);
+		}
+		last = nuevo;
+		size++;
 	}
 
 	@Override
-	public void insertElement(T element, int pos) 
+	public void insertElement(T elem, int pos) 
 	{
-		NodoLista<T> nuevo= new NodoLista<T>(element);
-		NodoLista<T> auxiliar=primero;
 		
-		if(primero!=null)
+		if(pos== size)
 		{
-			for (int i = 1; i <= pos; i++) 
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			nuevo.cambiarSiguiente(auxiliar.darSiguiente());
-			auxiliar.cambiarSiguiente(nuevo);
+			addLast(elem);
+		}
+		else if(pos == 1)
+		{
+			addFirst(elem);
 			
 		}
 		else
-			primero=nuevo;
-		tamanio++;
+		{
+			NodoLista<T> nuevo = new NodoLista<T>(elem);
+			NodoLista<T> anterior = first;
+			int i = 1;
 			
-		
+			while(anterior!= null && i!= pos)
+			{
+				anterior = anterior.darSiguiente();
+				i++;
+			}
+			
+			if(anterior!=null)
+			{
+			nuevo.cambiarSiguiente(anterior.darSiguiente());
+			anterior.cambiarSiguiente(nuevo);
+			}
+			size++;
+		}
 		
 	}
 
 	@Override
 	public T removeFirst() 
 	{
-		if(primero!=null)
+		NodoLista<T> eliminado = first;
+		if(first != null)
 		{
-			NodoLista<T> remover = primero;
-			primero=primero.darSiguiente();
-			tamanio--;
-			return remover.darInformation();
-		}
-		else
-			return null;
-		
+			NodoLista<T> nuevoPrimero = first.darSiguiente();
+			first = nuevoPrimero;
+		}	
+		size--;
+		return eliminado ==null?null:eliminado.darInformation() ;
 	}
 
 	@Override
 	public T removeLast() 
 	{
-		NodoLista<T> auxiliar=primero;
-		if(primero!=null)
-		{
-			while(auxiliar.darSiguiente().darSiguiente()!=null)
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			NodoLista<T> eliminar=auxiliar.darSiguiente();
-			auxiliar.cambiarSiguiente(null);
-			tamanio--;
-			return eliminar.darInformation();
-		}
-		else
-			return null;
-		
+		NodoLista<T> eliminado = last;
+		if(last != null)
+		{ 
+			last = null;
+		}	
+		size--;
+		return eliminado.darInformation() ;
 	}
 
 	@Override
 	public T deleteElement(int pos) 
 	{
-		if(primero!=null)
-		{
-			NodoLista<T> auxiliar=primero;
-			for (int i = 1; i < pos; i++) 
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			T eliminar = (T) auxiliar.darSiguiente().darInformation();
-			auxiliar.cambiarSiguiente(auxiliar.darSiguiente().darSiguiente());
-			tamanio--;
-			return eliminar;
-		}
-		else
-			return null;
 		
-	}
-
-	@Override
-	public T firstElement() {
-		if(primero!=null)
+		NodoLista<T> eliminado = null;
+		if(pos== size)
 		{
-			return primero.darInformation();
+			eliminado = last;
+			removeLast();
+		}
+		else if(pos == 1)
+		{
+			eliminado = first;
+			removeFirst();
+			
 		}
 		else
-			return null;
+		{
+			NodoLista<T> anterior = first;
+			int i = 1;
+			
+			while(anterior!= null && i!= pos)
+			{
+				anterior = anterior.darSiguiente();
+				i++;
+			}
+			eliminado = anterior.darSiguiente();
+			anterior.cambiarSiguiente(anterior.darSiguiente().darSiguiente());
+			size--;
+		}
 		
+		return eliminado.darInformation();
 	}
 
 	@Override
-	public T lastElement() {
-		// TODO Auto-generated method stub
-		if(primero!=null)
-		{
-			NodoLista<T> auxiliar=primero;
-			while(auxiliar.darSiguiente()!=null)
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			return auxiliar.darInformation();
-		}
-		else		
-			return null;
-	}
-
-	@Override
-	public T getElement(int pos) {
-		if(primero!=null)
-		{
-			NodoLista<T> auxiliar=primero;
-			for (int i = 1; i <= pos; i++) 
-			{
-				auxiliar=auxiliar.darSiguiente();
-			}
-			return auxiliar.darInformation();
-		}
-		else
-			return null;
-	}
-
-	@Override
-	public int size() {
-		// TODO Auto-generated method stub
-		return tamanio;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return primero==null;
-	}
-
-	@Override
-	public int isPresent(T element) 
+	public T firstElement() 
 	{
-		if(primero!=null)
+		if(size != 0)
 		{
-			NodoLista<T> auxiliar=primero;
-			int pos =0;
-			boolean centinela=false;
-			while( auxiliar!=null &&!centinela)
-			{
-				pos++;
-				if(auxiliar.darInformation().compareTo(element)==0)
-				{
-					centinela=true;
-				}
-				
-			}
-			if(centinela)
-			{
-				return pos;
-			}
-			else
-				return -1;
+			return first.darInformation();
 		}
 		else
-			return -1;
+			return null;
 	}
+
+	@Override
+	public T lastElement() 
+	{
+		if(size != 0)
+		{
+			return last.darInformation();
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	@Override
+	public T getElement(int pos) 
+	{
+		T buscado = null;
+		if(pos ==1)
+			buscado = first.darInformation();
+		else if (pos == size)
+			buscado = last.darInformation();
+		else
+		{
+			NodoLista<T> anterior = first;
+			int i = 1;
+		
+			while(anterior.darSiguiente()!= null && i!= pos-1)
+			{
+				anterior = anterior.darSiguiente();
+				i++;
+			}
+			if(anterior.darSiguiente() != null)
+				buscado = anterior.darSiguiente().darInformation();
+		}
+		return buscado;
+	}
+
+	@Override
+	public int size() 
+	{
+		
+		return size;
+	}
+
+
+	@Override
+	public boolean isEmpty() 
+	{
+		
+		return size == 0;
+	}
+
+	@Override
+	public boolean isPresent(T element) 
+	{
+		NodoLista<T> actual = first;
+		boolean present = false;
+		int i = 1;
+		while(actual!= null && !present)
+		{
+			if (actual.darInformation().compareTo(element)==0)
+				present = true;
+			actual = actual.darSiguiente();
+			i++;
+			
+		}
+		return present;
+	}
+	
+	@Override
+	public ILista<T> sublista(int numElementos) 
+	{
+		ListaEncadenada<T> subLista = new ListaEncadenada<>(); 
+		boolean termino = false;
+		for (int i = 1; i<= numElementos && !termino; i++)
+		{
+			
+			subLista.addLast(this.getElement(i));
+		}
+		return subLista;
+	}
+	
 
 	@Override
 	public void exchange(int pos1, int pos2) 
-	{
-		NodoLista<T> auxiliar1=primero;
-		NodoLista<T> auxiliar2=primero;
-		for (int i = 1; i <= pos1; i++) 
-		{
-			auxiliar1=auxiliar1.darSiguiente();
-		}
-		for (int i = 1; i <= pos2; i++) 
-		{
-			auxiliar2=auxiliar2.darSiguiente();
-		}
-		T info1 =auxiliar1.darInformation();
-		T info2=auxiliar2.darInformation();
-		auxiliar1.cambiarInformation(info2);
-		auxiliar2.cambiarInformation(info1);
+	{ 
+		T Epos1 = getElement(pos1) ;
+		T Epos2 = getElement(pos2) ;
+		
+		changeElement(pos2, Epos1);
+		changeElement(pos1, Epos2);
 		
 	}
 
 	@Override
-	public void changeInfo(int pos, T element) 
+	public void changeElement(int pos, T elem) 
 	{
-		NodoLista<T> auxiliar1=primero;
-		for (int i = 1; i <= pos; i++) 
+		NodoLista<T> nuevo = new NodoLista<T>(elem);
+		NodoLista<T> anterior = first;
+		if(pos ==1)
 		{
-			auxiliar1=auxiliar1.darSiguiente();
+			NodoLista<T> temporal = first.darSiguiente();
+			nuevo.cambiarSiguiente(temporal);
+			first = nuevo;
 		}
-		auxiliar1.cambiarInformation(element);
-		
-	}
-
-	@Override
-	public ILista<T> subList(int principio, int fin) {
-		int tamanio=principio-fin;
-		ListaEncadenada<T> listaDevolver = new ListaEncadenada<T>();
-		for (int i = 0; i <=tamanio ; i++) 
+		else
 		{
-			listaDevolver.addLast(this.getElement(i+principio));
-		}
-		return listaDevolver;
-	}
-
-	@Override
-	public ILista<T> subList2(int numElement) {
-		ListaEncadenada<T> newa = new ListaEncadenada<>();
-		if(numElement==tamanio)
-			newa = this;
-		else{
-			NodoLista<T> t = primero;
-			for(int i=0; i<numElement; i++){
-				newa.addLast(t.darInformation());
-				t = t.darSiguiente();
+			int i = 1;
+			while(anterior.darSiguiente()!= null&& i != pos-1)
+			{
+				anterior = anterior.darSiguiente();
+				i++;
+			}
+			if(anterior.darSiguiente().darSiguiente()==null)
+			{
+				anterior.cambiarSiguiente(nuevo);
+			}
+			else
+			{
+				NodoLista<T> siguiente = anterior.darSiguiente().darSiguiente();
+				nuevo.cambiarSiguiente(siguiente);
+				anterior.cambiarSiguiente(nuevo);
 			}
 		}
-		return newa;
+		
 	}
-	
+
+	@Override
+	public ILista<T> subListaPos(int pos, int sizeSub) 
+	{
+		ListaEncadenada<T> subLista = new ListaEncadenada<>(); 
+		for (int i = 0; i< (sizeSub); i++)
+		{
+				subLista.addLast(getElement(pos+i));
+		}
+		return subLista;
+	}
+
+	@Override
+	public int compareTo(ILista<T> o) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	
 }
